@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zakładanie Konta</title>
+</head>
+<body>
+<h2>Załóż konto</h2>
+<form action="/user/register" method="post">
+  <label>Imię:</label><br />
+  <input type="text" name="firstName" placeholder="Imię" required /><br /><br />
+
+  <label>Nazwisko:</label><br />
+  <input type="text" name="lastName" placeholder="Nazwisko" required /><br /><br />
+
+  <label>Email:</label><br />
+  <input type="email" name="email" placeholder="Email" required /><br /><br />
+
+  <label>Hasło:</label><br />
+  <input type="password" name="password" placeholder="Hasło" required /><br /><br />
+
+  <label>Telefon:</label><br />
+  <input type="text" name="phoneNumber" placeholder="Telefon" required /><br /><br />
+
+  <label>PESEL:</label><br />
+  <input type="text" name="pesel" placeholder="PESEL" pattern="\d{11}" required /><br /><br />
+
+  <label>Data urodzenia:</label><br />
+  <input type="date" name="birthDate" required /><br /><br />
+
+  <label>Typ konta:</label><br />
+  <select name="accountType" required>
+    <option value="SAVINGS">Oszczędnościowe</option>
+    <option value="CREDIT">Kredytowe</option>
+    <option value="ROR">ROR</option>
+  </select><br /><br />
+
+  <button type="submit">Załóż konto</button>
+</form>
+</body>
+</html>

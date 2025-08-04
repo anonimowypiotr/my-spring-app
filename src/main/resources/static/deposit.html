@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Formularz wpłaty</title>
+</head>
+<body>
+<h1>Wpłata środków</h1>
+<form method="get" action="/api/transactions/deposit">
+    <label for="cardNumber">Numer karty:</label><br>
+    <input type="text" id="cardNumber" name="cardNumber" required><br><br>
+
+    <label for="amount">Kwota do wpłaty:</label><br>
+    <input type="number" id="amount" name="amount" required min="1"><br><br>
+
+    <button type="submit">Wpłać</button>
+</form>
+</body>
+</html>

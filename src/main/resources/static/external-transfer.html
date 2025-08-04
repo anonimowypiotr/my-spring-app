@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Przelew zewnętrzny</title>
+</head>
+<body>
+<h1>Przelew zewnętrzny</h1>
+<form action="/api/transactions/external-transfer" method="get">
+  <label>Numer konta nadawcy: <input type="text" name="senderAccountNumber" required></label><br>
+  <label>Numer konta odbiorcy: <input type="text" name="receipientAccountNumber" required></label><br>
+  <label>Kwota: <input type="number" name="amount" required min="1"></label><br>
+  <button type="submit">Wyślij przelew</button>
+</form>
+</body>
+</html>
