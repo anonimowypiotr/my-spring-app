@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Formularz wypłaty</title>
+</head>
+<body>
+<h1>Wypłata środków</h1>
+<form method="get" action="/api/transactions/withdraw">
+    <label for="cardNumber">Numer karty:</label><br>
+    <input type="text" id="cardNumber" name="cardNumber" required><br><br>
+
+    <label for="amount">Kwota do wypłaty:</label><br>
+    <input type="number" id="amount" name="amount" required min="1"><br><br>
+
+    <button type="submit">Wypłać</button>
+</form>
+</body>
+</html>
