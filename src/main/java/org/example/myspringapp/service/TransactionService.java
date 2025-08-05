@@ -1,14 +1,15 @@
 package org.example.myspringapp.service;
 
 
+import org.example.myspringapp.dto.CashMachineDTO;
+import org.example.myspringapp.dto.ExternalTransferDTO;
 import org.example.myspringapp.model.Account;
 import org.example.myspringapp.model.Transaction;
 import org.example.myspringapp.repository.AccountRepository;
 import org.example.myspringapp.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionService {
@@ -17,55 +18,54 @@ public class TransactionService {
     private AccountRepository accountRepository;
 
     @Autowired
-    public void setTransactionRepository(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+    public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
     }
 
-
-
-    public Transaction withdrawal(String cardNumber, Integer amount) {
-        if (amount == 0 || amount <= 0) {
+    @Transactional
+    public Transaction withdrawal(CashMachineDTO cashMachineDTO) {
+        if (cashMachineDTO.getAmount() <= 0) {
             throw new IllegalArgumentException("Amount must be greater than 0");
         }
 
-        Account account = accountRepository.findByCardNumber(cardNumber)
+        Account account = accountRepository.findByCardNumber(cashMachineDTO.getCardNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
 
-
-        if(account.getBalance() < amount) {
+        if (account.getBalance() < cashMachineDTO.getAmount()) {
             throw new IllegalArgumentException("Insufficient funds");
         }
-        account.setBalance(account.getBalance() - amount);
+        account.setBalance(account.getBalance() - cashMachineDTO.getAmount());
         accountRepository.save(account);
 
         Transaction transaction = new Transaction();
         transaction.setType("WITHDRAWAL");
-        transaction.setCardNumber(cardNumber);
-        transaction.setAmount(amount);
+        transaction.setCardNumber(cashMachineDTO.getCardNumber());
+        transaction.setAmount(cashMachineDTO.getAmount());
         transaction.setReceipientAccountNumber(null);
         transaction.setAccount(account);
 
         return transactionRepository.save(transaction);
     }
-    public Transaction deposit(String cardNumber, Integer amount) {
-        if (amount == 0 || amount <= 0) {
+
+    @Transactional
+    public Transaction deposit(CashMachineDTO cashMachineDTO) {
+        if (cashMachineDTO.getAmount() <= 0) {
             throw new IllegalArgumentException("Amount must be greater than 0");
         }
 
-        Account account = accountRepository.findByCardNumber(cardNumber)
+        Account account = accountRepository.findByCardNumber(cashMachineDTO.getCardNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
 
-
-        account.setBalance(account.getBalance() + amount);
+        account.setBalance(account.getBalance() + cashMachineDTO.getAmount());
         accountRepository.save(account);
 
         Transaction transaction = new Transaction();
         transaction.setType("DEPOSIT");
-        transaction.setCardNumber(cardNumber);
-        transaction.setAmount(amount);
+        transaction.setCardNumber(cashMachineDTO.getCardNumber());
+        transaction.setAmount(cashMachineDTO.getAmount());
         transaction.setReceipientAccountNumber(null);
         transaction.setAccount(account);
 
@@ -73,33 +73,28 @@ public class TransactionService {
 
     }
 
-     public Transaction externalTransfer(Transaction transaction,Integer amount,String receipientAccountNumber,Account account) {
-        if(amount == 0 || amount <= 0) {
+    @Transactional
+    public Transaction externalTransfer(ExternalTransferDTO externalTransferDTO) {
+        if (externalTransferDTO.getAmount() <= 0) {
             throw new IllegalArgumentException("Amount must be greater than 0");
         }
-         Account senderAccount = accountRepository.findByAccountNumber(account.getAccountNumber())
-                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        Account senderAccount = accountRepository.findByAccountNumber(externalTransferDTO.getSenderAccountNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
-        if(senderAccount.getBalance() < amount) {
+        if (senderAccount.getBalance() < externalTransferDTO.getAmount()) {
             throw new IllegalArgumentException("Insufficient funds");
         }
 
-        senderAccount.setBalance(senderAccount.getBalance() - amount);
+        senderAccount.setBalance(senderAccount.getBalance() - externalTransferDTO.getAmount());
         accountRepository.save(senderAccount);
 
-         Transaction newTransaction = new Transaction();
-         newTransaction.setType("TRANSFER");
-         newTransaction.setCardNumber(senderAccount.getCardNumber());
-         newTransaction.setReceipientAccountNumber(receipientAccountNumber);
-         newTransaction.setAmount(amount);
-         newTransaction.setAccount(senderAccount);
+        Transaction newTransaction = new Transaction();
+        newTransaction.setType("TRANSFER");
+        newTransaction.setCardNumber(null);
+        newTransaction.setReceipientAccountNumber(externalTransferDTO.getRecipientAccountNumber());
+        newTransaction.setAmount(externalTransferDTO.getAmount());
+        newTransaction.setAccount(senderAccount);
 
-         return transactionRepository.save(newTransaction);
-
-
-     }
-
-
-
-
+        return transactionRepository.save(newTransaction);
+    }
 }
